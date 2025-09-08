@@ -6,7 +6,7 @@ import {
   useGetOrderDetailsQuery,
   usePayOrderMutation,
   useUpdateDeliverMutation,
-  useGetRazorpayApiKeyQuery
+  useLazyGetRazorpayApiKeyQuery
 } from '../slices/ordersApiSlice';
 import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
@@ -30,7 +30,11 @@ const OrderDetailsPage = () => {
 
   const { userInfo } = useSelector(state => state.auth);
 
-  const { data: razorpayApiKey } = useGetRazorpayApiKeyQuery();
+  const [trigger, { data: razorpayApiKey }] = useLazyGetRazorpayApiKeyQuery();
+
+  useEffect(() => {
+    trigger();
+  }, [trigger]);
 
   const paymentHandler = async e => {
     try {
@@ -224,6 +228,7 @@ const OrderDetailsPage = () => {
                       <Col>{addCurrency(order?.totalPrice)}</Col>
                     </Row>
                   </ListGroup.Item>
+
                   {!order?.isPaid && !userInfo.isAdmin && (
                     <ListGroup.Item>
                       <Button

@@ -17,10 +17,11 @@ const getProducts = async (req, res, next) => {
     const products = await Product.find({
       name: { $regex: search, $options: 'i' }
     })
+      .sort({ createdAt: -1 })
       .limit(limit > maxLimit ? maxLimit : limit)
       .skip(skip > maxSkip ? maxSkip : skip < 0 ? 0 : skip);
 
-    if (!products || products.length === 0) {
+    if (!products) {
       res.statusCode = 404;
       throw new Error('Products not found!');
     }

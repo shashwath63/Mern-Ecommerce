@@ -15,8 +15,7 @@ import Meta from '../components/Meta';
 const HomePage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPage, setTotalPage] = useState(0);
-  const [total, setTotal] = useState(0);
-  const [limit, setLimit] = useState(0);
+  const [limit, setLimit] = useState(4);
   const [skip, setSkip] = useState(0);
   const { search } = useSelector(state => state.search);
 
@@ -28,15 +27,18 @@ const HomePage = () => {
 
   useEffect(() => {
     if (data) {
-      setLimit(4);
-      setSkip((currentPage - 1) * limit);
-      setTotal(data.total);
-      setTotalPage(Math.ceil(total / limit));
+      setTotalPage(Math.ceil(data.total / limit));
     }
-  }, [currentPage, data, limit, total, search]);
+  }, [data, limit, search]);
+
+  useEffect(() => {
+    setCurrentPage(1);
+    setSkip(0);
+  }, [search]);
 
   const pageHandler = pageNum => {
     if (pageNum >= 1 && pageNum <= totalPage && pageNum !== currentPage) {
+      setSkip((pageNum - 1) * limit);
       setCurrentPage(pageNum);
     }
   };
